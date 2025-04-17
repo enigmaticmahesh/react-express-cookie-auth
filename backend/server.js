@@ -2,12 +2,20 @@ const express = require('express')
 const cookieParser = require('cookie-parser');
 const corsHandler = require('./middlewares/corsHandler');
 const openRoutes = require('./routes/openRoutes')
-const authRoutes = require('./routes/authRoutes')
+const authRoutes = require('./routes/authRoutes');
+const securityHeaders = require('./middlewares/securityHeaders');
+const dbHandler = require('./db/dbHandler');
+// const redirectToHttps = require('./middlewares/redirectToHttps');
 
+const initDB = () => {
+    dbHandler.connectDB()
+}
 
 const initServer = () => {
     const app = express()
     app.use(corsHandler)
+    // app.use(redirectToHttps)
+    app.use(securityHeaders)
     app.use(cookieParser())
 
     const PORT = process.env.PORT || 7001
@@ -21,6 +29,7 @@ const initServer = () => {
 
     app.listen(PORT, () => {
         console.log('Auth Server listening on PORT: '+PORT)
+        initDB()
     }).on('error', (err) => {
         console.log('Error while starting Auth Backend Server')
     })
